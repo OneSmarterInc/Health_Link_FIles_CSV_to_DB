@@ -13,12 +13,22 @@ def get_db_connection():
     if not all([driver, server, database]):
         raise ValueError("Missing one or more DB config variables in .env")
 
+    # connection_str = (
+    #     f"DRIVER={driver};"
+    #     f"SERVER={server};"
+    #     f"DATABASE={database};"
+    #     f"Trusted_Connection={trusted_connection};"
+    # )
+
+# For Production==>
     connection_str = (
-        f"DRIVER={driver};"
-        f"SERVER={server};"
-        f"DATABASE={database};"
-        f"Trusted_Connection={trusted_connection};"
-    )
+        'DRIVER={ODBC Driver 17 for SQL Server};'
+        'SERVER=ABCCOLUMBUSSQL2;'
+        'DATABASE=HealthLinkFilesDb;'
+        'UID=sa;'
+        'PWD=ChangeMe#2024;'
+        )
+
 
     # print(f"Connecting with: {connection_str}")  # Optional for debugging
     return pyodbc.connect(connection_str)

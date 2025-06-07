@@ -5,8 +5,13 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from zip_processor import process_zip_file
 
-WATCHED_FOLDER = os.path.join(os.getcwd(), "watched_folder")
-INSERTED_FOLDER = os.path.join(os.getcwd(), "inserted_folder")
+# base media directory
+BASE_MEDIA_DIR = r"E:\CSV_DB_Saver_Script" 
+
+WATCHED_FOLDER = os.path.join(BASE_MEDIA_DIR, "watched_folder")
+INSERTED_FOLDER = os.path.join(BASE_MEDIA_DIR, "inserted_folder")
+
+# Create folders don't exist
 os.makedirs(WATCHED_FOLDER, exist_ok=True)
 os.makedirs(INSERTED_FOLDER, exist_ok=True)
 
@@ -26,18 +31,22 @@ def wait_until_ready(file_path, timeout=30):
 
 def safe_process(zip_path):
     filename = os.path.basename(zip_path)
+    
+    if not os.path.exists(zip_path):
+        print(f"❌ File not found: {zip_path}")
+        return
+
     try:
         print(f"📦 Detected ZIP: {filename}")
         if wait_until_ready(zip_path):
-            process_zip_file(zip_path)
-            # If no exception, move to inserted_folder
+            process_zip_file(zip_path)  # Unzips + processes CSVs
             shutil.move(zip_path, os.path.join(INSERTED_FOLDER, filename))
             print(f"✅ Successfully processed and moved: {filename}")
         else:
             print(f"⚠️ Timeout waiting for file to finish writing: {filename}")
     except Exception as e:
         print(f"❌ Failed to process {filename}: {e}")
-        # Leave ZIP in watched_folder to retry later
+
 
 class ZipHandler(FileSystemEventHandler):
     def on_created(self, event):

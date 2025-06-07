@@ -4,8 +4,14 @@ import re
 import shutil
 from db_utils import get_db_connection, ensure_table_and_columns
 
-# Setup destination folder
-INSERTED_FOLDER = os.path.join(os.getcwd(), "inserted_folder")
+# base media directory
+BASE_MEDIA_DIR = r"E:\CSV_DB_Saver_Script" 
+
+WATCHED_FOLDER = os.path.join(BASE_MEDIA_DIR, "watched_folder")
+INSERTED_FOLDER = os.path.join(BASE_MEDIA_DIR, "inserted_folder")
+
+# Create folders don't exist
+os.makedirs(WATCHED_FOLDER, exist_ok=True)
 os.makedirs(INSERTED_FOLDER, exist_ok=True)
 
 def extract_file_info(filename):
