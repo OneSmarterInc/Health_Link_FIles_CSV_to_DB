@@ -1,0 +1,45 @@
+import pyodbc
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+def get_db_connection():
+    driver = os.getenv("DB_DRIVER")
+    server = os.getenv("DB_SERVER")
+    database = os.getenv("DB_DATABASE")
+    trusted_connection = os.getenv("DB_TRUSTED_CONNECTION", "yes")
+
+    if not all([driver, server, database]):
+        raise ValueError("Missing one or more DB config variables in .env")
+
+    connection_str = (
+        f"DRIVER={driver};"
+        f"SERVER={server};"
+        f"DATABASE={database};"
+        f"Trusted_Connection={trusted_connection};"
+    )
+
+    # print(f"Connecting with: {connection_str}")  # Optional for debugging
+    return pyodbc.connect(connection_str)
+
+def ensure_table_and_columns(cursor, table_name, columns):
+    cursor.execute(f"""
+        IF NOT EXISTS (
+            SELECT * FROM INFORMATION_SCHEMA.TABLES 
+            WHERE TABLE_NAME = '{table_name}'
+        )
+        CREATE TABLE {table_name} (
+            id INT IDENTITY(1,1) PRIMARY KEY
+        )
+    """)
+    
+    cursor.execute(f"""
+        SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS 
+        WHERE TABLE_NAME = '{table_name}'
+    """)
+    existing_cols = {row[0] for row in cursor.fetchall()}
+
+    for col in columns:
+        if col not in existing_cols:
+            cursor.execute(f'ALTER TABLE {table_name} ADD [{col}] NVARCHAR(MAX)')
