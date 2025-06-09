@@ -11,7 +11,8 @@ def get_db_connection():
     trusted_connection = os.getenv("DB_TRUSTED_CONNECTION", "yes")
 
     if not all([driver, server, database]):
-        raise ValueError("Missing one or more DB config variables in .env")
+        print("❌ Missing one or more DB config variables in .env")
+        return None
 
     # connection_str = (
     #     f"DRIVER={driver};"
@@ -19,8 +20,8 @@ def get_db_connection():
     #     f"DATABASE={database};"
     #     f"Trusted_Connection={trusted_connection};"
     # )
-
-# For Production==>
+    
+    # For Production==>
     connection_str = (
         'DRIVER={ODBC Driver 17 for SQL Server};'
         'SERVER=ABCCOLUMBUSSQL2;'
@@ -29,27 +30,35 @@ def get_db_connection():
         'PWD=ChangeMe#2024;'
         )
 
+    try:
+        conn = pyodbc.connect(connection_str)
+        return conn
+    except Exception as e:
+        print(f"❌ Failed to connect to database: {e}")
+        return None
 
-    # print(f"Connecting with: {connection_str}")  # Optional for debugging
-    return pyodbc.connect(connection_str)
 
 def ensure_table_and_columns(cursor, table_name, columns):
+    # Ensure table exists
     cursor.execute(f"""
         IF NOT EXISTS (
             SELECT * FROM INFORMATION_SCHEMA.TABLES 
-            WHERE TABLE_NAME = '{table_name}'
+            WHERE TABLE_NAME = ?
         )
-        CREATE TABLE {table_name} (
-            id INT IDENTITY(1,1) PRIMARY KEY
-        )
-    """)
-    
+        BEGIN
+            EXEC('CREATE TABLE [{0}] (id INT IDENTITY(1,1) PRIMARY KEY)')
+        END
+    """.format(table_name), table_name)
+
+    # Get existing columns
     cursor.execute(f"""
         SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS 
-        WHERE TABLE_NAME = '{table_name}'
-    """)
+        WHERE TABLE_NAME = ?
+    """, table_name)
+
     existing_cols = {row[0] for row in cursor.fetchall()}
 
+    # Add any missing columns
     for col in columns:
         if col not in existing_cols:
-            cursor.execute(f'ALTER TABLE {table_name} ADD [{col}] NVARCHAR(MAX)')
+            cursor.execute(f'ALTER TABLE [{table_name}] ADD [{col}] NVARCHAR(MAX)')

@@ -1,4 +1,7 @@
 watched_folder
 inserted_folder
+processed_csvs
+failed_csvs
 *pyc
 .env
+logs
