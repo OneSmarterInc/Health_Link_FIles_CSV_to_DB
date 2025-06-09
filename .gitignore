@@ -5,3 +5,4 @@ failed_csvs
 *pyc
 .env
 logs
+processed_zip_files

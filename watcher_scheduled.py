@@ -9,13 +9,13 @@ from zip_processor import process_zip_file
 # BASE_MEDIA_DIR = r"E:\CSV_DB_Saver_Script"
 
 # for production
-BASE_MEDIA_DIR = r"S:\HealthLinkFiles_InsertDB_Code\Health_Link_FIles_CSV_to_DB" 
+BASE_MEDIA_DIR = r"S:\HealthLinkFiles" 
 
-WATCHED_FOLDER = os.path.join(BASE_MEDIA_DIR, "watched_folder")
-INSERTED_FOLDER = os.path.join(BASE_MEDIA_DIR, "inserted_folder")
+WATCHED_FOLDER = os.path.join(BASE_MEDIA_DIR, "zipped")
+INSERTED_FOLDER = os.path.join(BASE_MEDIA_DIR, "processed_zip_files")
 
 # Create folders if they don't exist
-os.makedirs(WATCHED_FOLDER, exist_ok=True)
+# os.makedirs(WATCHED_FOLDER, exist_ok=True)
 os.makedirs(INSERTED_FOLDER, exist_ok=True)
 
 retry_times = []  # ["21:00", "22:00"] 
@@ -88,7 +88,7 @@ def check_retry():
             retry_times.remove(current_time)
 
 # Schedule jobs
-schedule.every().day.at("12:40").do(check_and_process_zips)
+schedule.every().day.at("14:24").do(check_and_process_zips)
 schedule.every().minute.do(check_retry)  # Check each minute for retry matches
 
 if __name__ == "__main__":

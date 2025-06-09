@@ -8,7 +8,7 @@ from db_utils import get_db_connection, ensure_table_and_columns
 # BASE_MEDIA_DIR = r"E:\CSV_DB_Saver_Script"
 
 # for production
-BASE_MEDIA_DIR = r"S:\HealthLinkFiles_InsertDB_Code\Health_Link_FIles_CSV_to_DB" 
+BASE_MEDIA_DIR = r"S:\HealthLinkFiles" 
 
 # Folders for processed and failed CSVs
 PROCESSED_CSVS = os.path.join(BASE_MEDIA_DIR, "processed_csvs")

@@ -5,14 +5,17 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from zip_processor import process_zip_file
 
-# base media directory
-BASE_MEDIA_DIR = r"E:\CSV_DB_Saver_Script" 
+# Base directories (For local)
+# BASE_MEDIA_DIR = r"E:\CSV_DB_Saver_Script"
 
-WATCHED_FOLDER = os.path.join(BASE_MEDIA_DIR, "watched_folder")
+# for production
+BASE_MEDIA_DIR = r"S:\HealthLinkFiles" 
+
+# WATCHED_FOLDER = os.path.join(BASE_MEDIA_DIR, "zipped")
 INSERTED_FOLDER = os.path.join(BASE_MEDIA_DIR, "inserted_folder")
 
 # Create folders don't exist
-os.makedirs(WATCHED_FOLDER, exist_ok=True)
+# os.makedirs(WATCHED_FOLDER, exist_ok=True)
 os.makedirs(INSERTED_FOLDER, exist_ok=True)
 
 def wait_until_ready(file_path, timeout=30):
